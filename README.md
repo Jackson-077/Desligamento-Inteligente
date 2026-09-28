@@ -27,8 +27,8 @@ Desenvolvido em **Python + Tkinter**, com suporte a persistência de agendamento
 ✅ Agendamento por horário específico
 ✅ Contador regressivo em tempo real
 ✅ Cancelamento de desligamento
-✅ Persistência do último agendamento
-✅ Integração com sistema Linux
+✅ Sincroniza com o systemd (detecta agendamento feito ou cancelado fora do app)
+✅ Pede autenticação (polkit) automaticamente quando o sistema exige
 ✅ Pacote `.deb` para instalação fácil
 
 ---
@@ -66,7 +66,7 @@ https://github.com/Jackson-077/Desligamento-Inteligente/releases
 Instale o pacote:
 
 ```bash
-sudo apt install ./desligamento-inteligente_1.0_all.deb
+sudo apt install ./desligamento-inteligente_1.3_all.deb
 ```
 
 O instalador irá configurar automaticamente as dependências necessárias.
@@ -122,14 +122,39 @@ python3 desligamento.py
 
 # 🛠️ Dependências
 
-* Python 3.10+
+* Python 3
 * Tkinter
 * Systemd
+* pkexec/polkit (recomendado, para a janela de senha)
 
 Ubuntu/Debian:
 
 ```bash
 sudo apt install python3 python3-tk systemd
+```
+
+---
+
+# 🔐 Permissões
+
+O app usa `shutdown` do systemd. Se o sistema negar a operação para o usuário comum, ele repete o comando via `pkexec` e uma janela pede a senha de administrador. **Não é preciso abrir o app com `sudo`.**
+
+Se ocorrer erro, a mensagem exibida no app inclui o detalhe retornado pelo sistema.
+
+### "Operation denied due to active block inhibitor"
+
+Algum programa aberto (download, gravação de disco, atualização, etc.) pediu ao sistema para não desligar. O app mostra quais são e pergunta se você quer agendar mesmo assim. Se confirmar, o desligamento é feito por um timer do systemd que ignora o bloqueio, então **trabalho não salvo pode ser perdido**. Para ver os bloqueios manualmente:
+
+```bash
+systemd-inhibit --list --no-pager | grep -w block
+```
+
+---
+
+# 🗑️ Desinstalar
+
+```bash
+sudo apt remove desligamento-inteligente
 ```
 
 ---
@@ -171,13 +196,13 @@ Execute:
 O instalador será criado:
 
 ```text
-desligamento-inteligente_1.0_all.deb
+desligamento-inteligente_1.3_all.deb
 ```
 
 Instale com:
 
 ```bash
-sudo apt install ./desligamento-inteligente_1.0_all.deb
+sudo apt install ./desligamento-inteligente_1.3_all.deb
 ```
 
 ---
@@ -195,4 +220,3 @@ Uso livre para estudos, melhorias e distribuição conforme os termos definidos 
 Sugestões, melhorias e correções são bem-vindas.
 
 Se este projeto foi útil, deixe uma estrela ⭐ no GitHub.
-
